@@ -23,10 +23,11 @@ fn get_target_path_from_hash_map(
             .find(|(k, _)| file_name.ends_with(k.as_str()))?;
         (result.0.as_str(), result.1.as_str())
     };
-    // If the file name is just an extension then use the parent fodler as the
+    // If the file name is just an extension or the file name is and underscore
+    // with extension (e.g _.bpe.json) then use the parent fodler as the
     // actual file name.
     let (base_name, base_path): (String, PathBuf);
-    if file_name.len() == extension.len() {
+    if file_name == extension || file_name == &format!("_.{}", extension) {
         base_name = fp.parent()?.file_name()?.to_str()?.to_string()
             + "." + &extension;
         base_path = fp.parent()?.parent()?.to_path_buf();
@@ -83,6 +84,13 @@ fn copy_files(
             };
 
             // Copy file
+            if target_path.exists() {
+                eprintln!(
+                    "File \"{}\" already exists. Skipped.",
+                    target_path.display()
+                );
+                continue;
+            }
             fs::create_dir_all(target_path.parent().unwrap())?;
             match fs::copy(&fp, &target_path) {
                 Ok(_) => {}
