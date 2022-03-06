@@ -27,9 +27,9 @@ fn get_target_path_from_hash_map(
     // with extension (e.g _.bpe.json) then use the parent fodler as the
     // actual file name.
     let (base_name, base_path): (String, PathBuf);
-    if file_name == extension || file_name == &format!("_.{}", extension) {
+    if file_name == extension || file_name == &format!("_{}", extension) {
         base_name = fp.parent()?.file_name()?.to_str()?.to_string()
-            + "." + &extension;
+            + &extension;
         base_path = fp.parent()?.parent()?.to_path_buf();
     } else {
         base_name = fp.file_name()?.to_str()?.to_string();
